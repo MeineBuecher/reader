@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Online Reader</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Reader</title>
+<style>
+body {
+  margin: 0;
+  background: black;
+}
+iframe {
+  width: 100%;
+  height: 100vh;
+  border: none;
+}
+</style>
 </head>
+
 <body>
-  <div id="watermark"></div>
 
-  <div class="reader">
-    <div class="reader-header">
-      <h1 id="book-title">Buch</h1>
-      <p id="buyer-info"></p>
-    </div>
+<iframe src="Das freie Hören.pdf"></iframe>
 
-    <div id="book-content" class="book-content"></div>
-  </div>
-
-  <script src="reader.js"></script>
 </body>
 </html>
