@@ -4,120 +4,88 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Meine Bibliothek</title>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b0b0b;
-      color: white;
-    }
-
-    .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
-
-    h1 {
-      margin: 0 0 10px;
-      font-size: 36px;
-    }
-
-    .sub {
-      color: rgba(255,255,255,0.8);
-      margin-bottom: 30px;
-      line-height: 1.5;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 22px;
-    }
-
-    .card {
-      background: #151515;
-      border: 1px solid #262626;
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
-
-    .cover {
-      height: 320px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      text-align: center;
-      background: linear-gradient(135deg, #1c1c1c, #2d2d2d);
-      font-size: 26px;
-      font-weight: bold;
-    }
-
-    .content {
-      padding: 20px;
-    }
-
-    .content h2 {
-      margin: 0 0 10px;
-      font-size: 22px;
-    }
-
-    .content p {
-      margin: 0 0 18px;
-      color: rgba(255,255,255,0.82);
-      line-height: 1.5;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 12px 18px;
-      border-radius: 10px;
-      background: #f0b90b;
-      color: #111;
-      text-decoration: none;
-      font-weight: bold;
-    }
-  </style>
+  <link rel="stylesheet" href="book.css">
 </head>
-
 <body>
   <div class="wrap">
-    <h1>Meine Bibliothek</h1>
-
-    <div class="sub">
-      Willkommen in meinem geschützten Leserbereich.
-      Hier findest du meine Bücher in digitaler Leseansicht.
+    <div class="topbar">
+      <div class="brand">
+        <h1>Meine Bibliothek</h1>
+        <p>Willkommen in meinem digitalen Leserbereich. Hier findest du meine Bücher in direkter Leseansicht.</p>
+      </div>
     </div>
 
     <div class="grid">
 
       <div class="card">
-        <div class="cover">Das freie Hören</div>
-        <div class="content">
-          <h2>Das freie Hören</h2>
-          <p>Ein Buch über Erinnerung, Urteilskraft und den inneren Raum zwischen Stimme und Reaktion.</p>
-          <a class="btn" href="freies-hoeren.html">Jetzt lesen</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="cover">Der Mensch und sein Glauben</div>
-        <div class="content">
-          <h2>Der Mensch und sein Glauben</h2>
-          <p>Ein Buch über Glauben, innere Verbindung und die Suche des Menschen nach Wahrheit.</p>
-          <a class="btn" href="glauben.html">Jetzt lesen</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="cover">Das Universum als lebendiges Wesen</div>
+        <div class="cover"><img src="universum.jpg" alt="Das Universum als lebendiges Wesen"></div>
         <div class="content">
           <h2>Das Universum als lebendiges Wesen</h2>
           <p>Eine Reise durch Bewusstsein, Liebe und den Ursprung allen Seins.</p>
-          <a class="btn" href="universum.html">Jetzt lesen</a>
+          <a class="btn" href="/reader/universum.html">Jetzt lesen</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cover"><img src="glauben.jpg" alt="Der Mensch und sein Glauben"></div>
+        <div class="content">
+          <h2>Der Mensch und sein Glauben</h2>
+          <p>Ein Buch über Glauben, innere Verbindung und die Suche des Menschen nach Wahrheit.</p>
+          <a class="btn" href="/reader/glauben.html">Jetzt lesen</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cover"><img src="99-namen.jpg" alt="Die 99 Namen Allahs"></div>
+        <div class="content">
+          <h2>Die 99 Namen Allahs</h2>
+          <p>Ein Buch über die Namen Allahs als Spiegel von Nähe, Bedeutung und Erinnerung.</p>
+          <a class="btn" href="/reader/namen-allahs.html">Jetzt lesen</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cover"><img src="uebermittler.jpg" alt="Die Übermittler des Universums"></div>
+        <div class="content">
+          <h2>Die Übermittler des Universums</h2>
+          <p>Ein Blick auf die Übermittler, auf Zeichen, Führung und die Beziehung zwischen Himmel und Mensch.</p>
+          <a class="btn" href="/reader/uebermittler.html">Jetzt lesen</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cover"><img src="liebe.jpg" alt="Liebe, das erste Licht"></div>
+        <div class="content">
+          <h2>Liebe, das erste Licht</h2>
+          <p>Ein Buch über Liebe als Ursprung, Bewegung und erstes Licht in der Schöpfung.</p>
+          <a class="btn" href="/reader/liebe.html">Jetzt lesen</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cover"><img src="gewalt.jpg" alt="Die neue Gewalt"></div>
+        <div class="content">
+          <h2>Die neue Gewalt</h2>
+          <p>Ein Buch über die unsichtbaren Formen von Druck, Macht und der Gewalt unserer Zeit.</p>
+          <a class="btn" href="/reader/neue-gewalt.html">Jetzt lesen</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cover"><img src="quantenethik.jpg" alt="Meine Quantenethik"></div>
+        <div class="content">
+          <h2>Meine Quantenethik</h2>
+          <p>Ein Buch über Verantwortung, Resonanz und ein ethisches Denken im lebendigen Universum.</p>
+          <a class="btn" href="/reader/quantenethik.html">Jetzt lesen</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cover"><img src="freies-hoeren-handbuch.jpg" alt="Das freie Hören"></div>
+        <div class="content">
+          <h2>Das freie Hören</h2>
+          <p>Ein Buch über Erinnerung, Urteilskraft und den inneren Raum zwischen Stimme und Reaktion.</p>
+          <a class="btn" href="/reader/freies-hoeren.html">Jetzt lesen</a>
         </div>
       </div>
 
