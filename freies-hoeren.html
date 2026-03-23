@@ -1,89 +1,41 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Das freie Hören</title>
-
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background: #0b0b0b;
-  font-family: Arial, sans-serif;
-}
-
-.topbar {
-  height: 60px;
-  background: #111;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  box-sizing: border-box;
-  border-bottom: 1px solid #222;
-}
-
-.title {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.reader {
-  height: calc(100% - 60px);
-}
-
-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: #222;
-}
-
-.watermark {
-  position: fixed;
-  bottom: 10px;
-  right: 15px;
-  background: rgba(0,0,0,0.6);
-  color: rgba(255,255,255,0.8);
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 12px;
-  pointer-events: none;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Das freie Hören</title>
+  <link rel="stylesheet" href="book.css">
 </head>
-
 <body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="back-btn" href="/reader/">← Zur Bibliothek</a>
+      <a class="buy-btn" href="https://www.das-universum-als-lebendiges-wesen.de/" target="_blank">Buch kaufen</a>
+    </div>
 
-<div class="topbar">
-  <div class="title">Das freie Hören</div>
-  <div>Online-Leseansicht</div>
-</div>
+    <div class="hero">
+      <img src="freies-hoeren-handbuch.jpg" alt="Das freie Hören">
+      <div class="info-box">
+        <h2>Das freie Hören</h2>
+        <p>Ein Buch über Erinnerung, Urteilskraft und den inneren Raum zwischen Stimme und Reaktion.</p>
+        <div class="meta">
+          <span>PDF-Leseansicht</span>
+          <span>Datei: das-freie-hoeren.pdf</span>
+        </div>
+      </div>
+    </div>
 
-<div class="reader">
-  <iframe src="das-freie-hoeren.pdf#toolbar=0&navpanes=0"></iframe>
-</div>
+    <div class="reader-box">
+      <div class="reader-head">
+        <strong>Das freie Hören</strong>
+        <span>Digitale Leseansicht</span>
+      </div>
+      <iframe class="pdf-frame" src="das-freie-hoeren.pdf#toolbar=0&navpanes=0&scrollbar=1"></iframe>
+    </div>
 
-<div class="watermark">
-  Nur zur persönlichen Nutzung
-</div>
-
-<script>
-document.addEventListener("contextmenu", e => e.preventDefault());
-
-document.addEventListener("keydown", function(e) {
-  if (
-    (e.ctrlKey && ["s","p","u","c"].includes(e.key.toLowerCase())) ||
-    (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(e.key.toLowerCase())) ||
-    e.key === "F12"
-  ) {
-    e.preventDefault();
-  }
-});
-</script>
-
+    <div class="note">
+      Hinweis: Diese Ansicht dient dem Lesen im Browser.
+    </div>
+  </div>
 </body>
 </html>
