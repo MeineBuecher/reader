@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Bibliothek</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+    body {
+      background:#0b0b0b;
+      color:white;
+      font-family:Arial;
+      margin:0;
+    }
+
+    .wrap {
+      max-width:1200px;
+      margin:auto;
+      padding:30px;
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(250px,1fr));
+      gap:20px;
+    }
+
+    .card {
+      background:#151515;
+      border-radius:15px;
+      overflow:hidden;
+      padding:15px;
+    }
+
+    img {
+      width:100%;
+      border-radius:10px;
+    }
+
+    .btn {
+      display:block;
+      margin-top:10px;
+      padding:10px;
+      background:#f0b90b;
+      color:black;
+      text-align:center;
+      text-decoration:none;
+      border-radius:8px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="wrap">
+  <h1>Meine Bibliothek</h1>
+  <div class="grid" id="books"></div>
+</div>
+
+<script>
+const SUPABASE_URL = "DEINE_URL";
+const SUPABASE_KEY = "DEIN_KEY";
+
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// 🔐 prüfen ob eingeloggt
+async function checkUser() {
+  const { data } = await client.auth.getUser();
+  if (!data.user) {
+    window.location.href = "index.html";
+  }
+}
+
+// 📚 Bücher laden
+async function loadBooks() {
+
+  const { data: books } = await client
+    .from("books")
+    .select("*");
+
+  const container = document.getElementById("books");
+
+  books.forEach(book => {
+
+    const el = document.createElement("div");
+    el.className = "card";
+
+    el.innerHTML = `
+      <img src="https://DEINE_URL/storage/v1/object/public/${book.cover_path}">
+      <h3>${book.title}</h3>
+
+      <a class="btn" href="preview.html?book=${book.slug}">
+        Vorschau lesen
+      </a>
+
+      <a class="btn" href="https://paypal.me/Mayer68/${book.price_eur}">
+        Kaufen (${book.price_eur} €)
+      </a>
+    `;
+
+    container.appendChild(el);
+  });
+}
+
+checkUser();
+loadBooks();
+</script>
+
+</body>
+</html>
