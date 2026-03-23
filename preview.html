@@ -1,58 +1,59 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<title>Vorschau</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-<style>
-body {
-  background:#0b0b0b;
-  color:white;
-  font-family:Arial;
-  text-align:center;
-}
-
-iframe {
-  width:90%;
-  height:80vh;
-  border:none;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vorschau</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#0b0b0b; color:white; }
+    .wrap { max-width:1200px; margin:0 auto; padding:20px; }
+    a { color:#f0b90b; text-decoration:none; }
+    iframe { width:100%; height:85vh; border:none; background:#111; border-radius:12px; }
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <p><a href="library.html">← Zur Bibliothek</a></p>
+    <h1 id="title">Vorschau</h1>
+    <iframe id="viewer"></iframe>
+  </div>
 
-<h2>Vorschau</h2>
+  <script>
+    const SUPABASE_URL = "DEINE_SUPABASE_URL";
+    const SUPABASE_KEY = "DEINE_SUPABASE_ANON_KEY";
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-<iframe id="viewer"></iframe>
+    async function init() {
+      const { data } = await client.auth.getUser();
+      if (!data.user) {
+        window.location.href = "index.html";
+        return;
+      }
 
-<script>
-const SUPABASE_URL = "DEINE_URL";
-const SUPABASE_KEY = "DEIN_KEY";
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get("slug");
 
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      const { data: book, error } = await client
+        .from("books")
+        .select("title,preview_pdf_path")
+        .eq("slug", slug)
+        .single();
 
-// URL lesen
-const params = new URLSearchParams(window.location.search);
-const slug = params.get("book");
+      if (error || !book) {
+        alert("Vorschau nicht gefunden.");
+        return;
+      }
 
-async function loadPreview() {
+      document.getElementById("title").textContent = book.title + " – Vorschau";
+      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${book.preview_pdf_path}`;
+      document.getElementById("viewer").src = publicUrl + "#toolbar=0&navpanes=0";
+    }
 
-  const { data } = await client
-    .from("books")
-    .select("*")
-    .eq("slug", slug)
-    .single();
-
-  const url = `https://DEINE_URL/storage/v1/object/public/${data.preview_pdf_path}`;
-
-  document.getElementById("viewer").src = url;
-}
-
-loadPreview();
-</script>
+    init();
+  </script>
+</body>
+</html>
 
 </body>
 </html>
