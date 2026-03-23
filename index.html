@@ -2,25 +2,98 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Leserzugang</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meine Bibliothek</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0b0b;
+      color: white;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 36px;
+    }
+    .sub {
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+    }
+    .card {
+      background: #151515;
+      border: 1px solid #262626;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+    .cover {
+      height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+      background: linear-gradient(135deg, #1c1c1c, #2d2d2d);
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .content {
+      padding: 20px;
+    }
+    .content h2 {
+      margin: 0 0 10px;
+      font-size: 24px;
+    }
+    .content p {
+      margin: 0 0 18px;
+      color: rgba(255,255,255,0.82);
+      line-height: 1.5;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 18px;
+      border-radius: 10px;
+      background: #f0b90b;
+      color: #111;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .toplink {
+      display: inline-block;
+      margin-top: 28px;
+      color: #ddd;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
-  <div class="center login-box">
-    <h1>Geschützter Leserzugang</h1>
-    <p>Bitte Zugangscode eingeben</p>
+  <div class="wrap">
+    <h1>Meine Bibliothek</h1>
+    <div class="sub">
+      Willkommen in meinem geschützten Leserbereich. Hier findest du meine Bücher in digitaler Leseansicht.
+    </div>
 
-    <input type="text" id="code" placeholder="Zugangscode">
-    <button onclick="checkCode()">Zugang öffnen</button>
-
-    <div class="hint">
-      Demo-Codes:<br>
-      <strong>UNI2026</strong><br>
-      <strong>GLAUBEN2026</strong>
+    <div class="grid">
+      <div class="card">
+        <div class="cover">Das freie Hören</div>
+        <div class="content">
+          <h2>Das freie Hören</h2>
+          <p>Ein Buch über Erinnerung, Urteilskraft und den inneren Raum zwischen Stimme und Reaktion.</p>
+          <a class="btn" href="freies-hoeren.html">Jetzt lesen</a>
+        </div>
+      </div>
     </div>
   </div>
-
-  <script src="app.js"></script>
 </body>
 </html>
