@@ -1,1 +1,215 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b0b0b;
+  color: white;
+}
 
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 20px 50px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.brand h1 {
+  margin: 0 0 6px;
+  font-size: 34px;
+}
+
+.brand p {
+  margin: 0;
+  color: rgba(255,255,255,0.78);
+  line-height: 1.5;
+}
+
+.back-btn,
+.buy-btn {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.back-btn {
+  background: #232323;
+  color: #fff;
+  border: 1px solid #3a3a3a;
+}
+
+.buy-btn {
+  background: #f0b90b;
+  color: #111;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 26px;
+  align-items: start;
+  margin-bottom: 28px;
+}
+
+.hero img {
+  width: 100%;
+  border-radius: 18px;
+  border: 1px solid #262626;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  display: block;
+}
+
+.info-box {
+  background: #151515;
+  border: 1px solid #262626;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.info-box h2 {
+  margin: 0 0 12px;
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.info-box p {
+  margin: 0 0 16px;
+  color: rgba(255,255,255,0.82);
+  line-height: 1.6;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.meta span {
+  background: #202020;
+  border: 1px solid #303030;
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+}
+
+.reader-box {
+  background: #151515;
+  border: 1px solid #262626;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.reader-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid #262626;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.reader-head strong {
+  font-size: 18px;
+}
+
+.reader-head span {
+  color: rgba(255,255,255,0.72);
+  font-size: 14px;
+}
+
+.pdf-frame {
+  width: 100%;
+  height: 80vh;
+  min-height: 700px;
+  border: none;
+  background: #111;
+}
+
+.note {
+  margin-top: 18px;
+  color: rgba(255,255,255,0.68);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+.card {
+  background: #151515;
+  border: 1px solid #262626;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.cover {
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #1c1c1c, #2d2d2d);
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.content {
+  padding: 20px;
+}
+
+.content h2 {
+  margin: 0 0 10px;
+  font-size: 22px;
+}
+
+.content p {
+  margin: 0 0 18px;
+  color: rgba(255,255,255,0.82);
+  line-height: 1.5;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: #f0b90b;
+  color: #111;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+@media (max-width: 860px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .pdf-frame {
+    height: 70vh;
+    min-height: 500px;
+  }
+}
