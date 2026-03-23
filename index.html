@@ -3,93 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Meine Bibliothek</title>
-  <link rel="stylesheet" href="book.css">
+  <title>Login</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#0b0b0b; color:white; display:grid; place-items:center; min-height:100vh; }
+    .box { width:min(420px, 92vw); background:#151515; border:1px solid #262626; border-radius:18px; padding:24px; }
+    input { width:100%; box-sizing:border-box; padding:12px; margin:8px 0; border-radius:10px; border:1px solid #333; background:#0f0f0f; color:#fff; }
+    button { width:100%; padding:12px; border:none; border-radius:10px; background:#f0b90b; color:#111; font-weight:bold; margin-top:10px; cursor:pointer; }
+    .secondary { background:#232323; color:#fff; border:1px solid #3a3a3a; }
+  </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <h1>Meine Bibliothek</h1>
-        <p>Willkommen in meinem digitalen Leserbereich. Hier findest du meine Bücher in direkter Leseansicht.</p>
-      </div>
-    </div>
+  <div class="box">
+    <h1>Meine Bibliothek</h1>
+    <p>Kostenlos anmelden und Vorschauen lesen.</p>
 
-    <div class="grid">
+    <input id="email" type="email" placeholder="E-Mail">
+    <input id="password" type="password" placeholder="Passwort">
 
-      <div class="card">
-        <div class="cover"><img src="universum.jpg" alt="Das Universum als lebendiges Wesen"></div>
-        <div class="content">
-          <h2>Das Universum als lebendiges Wesen</h2>
-          <p>Eine Reise durch Bewusstsein, Liebe und den Ursprung allen Seins.</p>
-          <a class="btn" href="/reader/universum.html">Jetzt lesen</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="cover"><img src="glauben.jpg" alt="Der Mensch und sein Glauben"></div>
-        <div class="content">
-          <h2>Der Mensch und sein Glauben</h2>
-          <p>Ein Buch über Glauben, innere Verbindung und die Suche des Menschen nach Wahrheit.</p>
-          <a class="btn" href="/reader/glauben.html">Jetzt lesen</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="cover"><img src="99-namen.jpg" alt="Die 99 Namen Allahs"></div>
-        <div class="content">
-          <h2>Die 99 Namen Allahs</h2>
-          <p>Ein Buch über die Namen Allahs als Spiegel von Nähe, Bedeutung und Erinnerung.</p>
-          <a class="btn" href="/reader/namen-allahs.html">Jetzt lesen</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="cover"><img src="uebermittler.jpg" alt="Die Übermittler des Universums"></div>
-        <div class="content">
-          <h2>Die Übermittler des Universums</h2>
-          <p>Ein Blick auf die Übermittler, auf Zeichen, Führung und die Beziehung zwischen Himmel und Mensch.</p>
-          <a class="btn" href="/reader/uebermittler.html">Jetzt lesen</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="cover"><img src="liebe.jpg" alt="Liebe, das erste Licht"></div>
-        <div class="content">
-          <h2>Liebe, das erste Licht</h2>
-          <p>Ein Buch über Liebe als Ursprung, Bewegung und erstes Licht in der Schöpfung.</p>
-          <a class="btn" href="/reader/liebe.html">Jetzt lesen</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="cover"><img src="gewalt.jpg" alt="Die neue Gewalt"></div>
-        <div class="content">
-          <h2>Die neue Gewalt</h2>
-          <p>Ein Buch über die unsichtbaren Formen von Druck, Macht und der Gewalt unserer Zeit.</p>
-          <a class="btn" href="/reader/neue-gewalt.html">Jetzt lesen</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="cover"><img src="quantenethik.jpg" alt="Meine Quantenethik"></div>
-        <div class="content">
-          <h2>Meine Quantenethik</h2>
-          <p>Ein Buch über Verantwortung, Resonanz und ein ethisches Denken im lebendigen Universum.</p>
-          <a class="btn" href="/reader/quantenethik.html">Jetzt lesen</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="cover"><img src="freies-hoeren-handbuch.jpg" alt="Das freie Hören"></div>
-        <div class="content">
-          <h2>Das freie Hören</h2>
-          <p>Ein Buch über Erinnerung, Urteilskraft und den inneren Raum zwischen Stimme und Reaktion.</p>
-          <a class="btn" href="/reader/freies-hoeren.html">Jetzt lesen</a>
-        </div>
-      </div>
-
-    </div>
+    <button onclick="login()">Login</button>
+    <button class="secondary" onclick="signUp()">Registrieren</button>
   </div>
+
+  <script src="app.js"></script>
+
+  <script>
+    async function checkLogin() {
+      const { data } = await client.auth.getUser();
+      if (data.user) {
+        window.location.href = "library.html";
+      }
+    }
+    checkLogin();
+  </script>
+
 </body>
 </html>
