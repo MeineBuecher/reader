@@ -165,3 +165,12 @@ async function openFullBook(slug) {
 
   window.open(data.signedUrl, "_blank");
 }
+<script>
+async function checkLogin() {
+  const { data } = await client.auth.getUser();
+  if (data.user) {
+    window.location.href = "library.html";
+  }
+}
+checkLogin();
+</script>
