@@ -1,0 +1,87 @@
+body {
+  background: #0b0b0b;
+  color: white;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.center {
+  text-align: center;
+  margin-top: 100px;
+}
+
+.login-box {
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 30px;
+  background: #161616;
+  border-radius: 14px;
+}
+
+input {
+  padding: 12px;
+  margin: 10px 0;
+  width: 80%;
+  max-width: 320px;
+  border-radius: 8px;
+  border: none;
+}
+
+button {
+  padding: 12px 20px;
+  background: #ffc439;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.hint {
+  margin-top: 20px;
+  color: #bbb;
+  font-size: 14px;
+}
+
+.reader {
+  max-width: 900px;
+  margin: 30px auto;
+  background: #141414;
+  border-radius: 16px;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.reader-header {
+  border-bottom: 1px solid #333;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+}
+
+.book-content p {
+  line-height: 1.7;
+  margin-bottom: 18px;
+  font-size: 18px;
+}
+
+#buyer-info {
+  color: #c7c7c7;
+  font-size: 14px;
+}
+
+#watermark {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  font-size: 28px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transform: rotate(-30deg);
+  white-space: pre-line;
+  z-index: 9999;
+}
