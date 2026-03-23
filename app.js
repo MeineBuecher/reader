@@ -3,12 +3,24 @@ const SUPABASE_KEY = sb_publishable_OptCG7mWpIJhHGMr_1QF4w_IY2bObvs;
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// 🟢 Registrierung
-async function signUp() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+async function signup() {
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
 
-  const { error } = await client.auth.signUp({
+  if (!emailInput || !passwordInput) {
+    alert("Eingabefelder nicht gefunden.");
+    return;
+  }
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    alert("Bitte E-Mail und Passwort eingeben.");
+    return;
+  }
+
+  const { data, error } = await client.auth.signUp({
     email,
     password
   });
@@ -18,197 +30,130 @@ async function signUp() {
     return;
   }
 
-  alert("Registrierung erfolgreich");
+  alert("Registrierung erfolgreich. Du kannst dich jetzt anmelden.");
+  console.log("signup:", data);
 }
 
-// 🔵 Login
 async function login() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
 
-  const { error } = await client.auth.signInWithPassword({
+  if (!emailInput || !passwordInput) {
+    alert("Eingabefelder nicht gefunden.");
+    return;
+  }
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    alert("Bitte E-Mail und Passwort eingeben.");
+    return;
+  }
+
+  const { data, error } = await client.auth.signInWithPassword({
     email,
     password
   });
 
   if (error) {
-    alert("Login fehlgeschlagen: " + error.message);
+    alert("Anmeldung fehlgeschlagen: " + error.message);
     return;
   }
 
-  window.location.href = "library.html";
+  alert("Login erfolgreich.");
+  console.log("login:", data);
+
+  const loginBox = document.getElementById("loginBox");
+  const libraryBox = document.getElementById("libraryBox");
+
+  if (loginBox) loginBox.style.display = "none";
+  if (libraryBox) libraryBox.style.display = "block";
+
+  await loadBooks();
 }
 
-// 🔴 Logout
 async function logout() {
-  await client.auth.signOut();
-  window.location.href = "index.html";
-}
-
-// 🔐 Nutzer prüfen
-async function requireUser() {
-  const { data, error } = await client.auth.getUser();
-
-  if (error || !data.user) {
-    window.location.href = "index.html";
-    return null;
-  }
-
-  return data.user;
-}
-
-// 📚 Bücher + Käufe laden
-async function loadBooksAndPurchases() {
-  const user = await requireUser();
-  if (!user) return;
-
-  const [{ data: books, error: booksError }, { data: purchases, error: purchasesError }] =
-    await Promise.all([
-      client.from("books").select("*").eq("is_active", true).order("title"),
-      client.from("purchases").select("book_id,status").eq("user_id", user.id)
-    ]);
-
-  if (booksError) {
-    alert("Fehler beim Laden der Bücher: " + booksError.message);
-    return;
-  }
-
-  if (purchasesError) {
-    alert("Fehler beim Laden der Käufe: " + purchasesError.message);
-    return;
-  }
-
-  const purchaseMap = new Map();
-  (purchases || []).forEach(p => purchaseMap.set(p.book_id, p.status));
-
-  const container = document.getElementById("books");
-  container.innerHTML = "";
-
-  books.forEach(book => {
-
-    const status = purchaseMap.get(book.id) || "";
-    const coverUrl = `${SUPABASE_URL}/storage/v1/object/public/${book.cover_path}`;
-
-    const card = document.createElement("div");
-    card.className = "card";
-
-    let actionHtml = `
-      <a class="btn" href="preview.html?slug=${encodeURIComponent(book.slug)}">
-        Vorschau lesen
-      </a>
-
-      <button class="btn btn-buy"
-        onclick="requestPurchase('${book.id}', '${book.title.replace(/'/g, "\\'")}', ${book.price_eur})">
-        Kaufen (${Number(book.price_eur).toFixed(2)} €)
-      </button>
-    `;
-
-    if (status === "pending") {
-      actionHtml = `
-        <a class="btn" href="preview.html?slug=${encodeURIComponent(book.slug)}">
-          Vorschau lesen
-        </a>
-        <div class="status pending">
-          Zahlung angelegt – warte auf Freischaltung
-        </div>
-      `;
-    }
-
-    if (status === "paid") {
-      actionHtml = `
-        <a class="btn" href="preview.html?slug=${encodeURIComponent(book.slug)}">
-          Vorschau lesen
-        </a>
-
-        <button class="btn btn-open"
-          onclick="openFullBook('${book.slug}')">
-          Vollversion öffnen
-        </button>
-
-        <div class="status paid">
-          Freigeschaltet
-        </div>
-      `;
-    }
-
-    card.innerHTML = `
-      <img src="${coverUrl}">
-      <h3>${book.title}</h3>
-      <p>${book.preview_pages === 10 ? "10 Seiten Vorschau" : "20 Seiten Vorschau"}</p>
-      ${actionHtml}
-    `;
-
-    container.appendChild(card);
-  });
-}
-
-// 💳 Kauf anlegen
-async function requestPurchase(bookId, title, price) {
-  const user = await requireUser();
-  if (!user) return;
-
-  const { error } = await client.from("purchases").upsert({
-    user_id: user.id,
-    book_id: bookId,
-    amount_eur: price,
-    status: "pending",
-    paypal_note: title
-  }, {
-    onConflict: "user_id,book_id"
-  });
+  const { error } = await client.auth.signOut();
 
   if (error) {
-    alert("Kauf konnte nicht angelegt werden: " + error.message);
+    alert("Abmeldung fehlgeschlagen: " + error.message);
     return;
   }
 
-  alert("Bitte bei PayPal im Hinweis angeben: " + title);
+  const loginBox = document.getElementById("loginBox");
+  const libraryBox = document.getElementById("libraryBox");
 
-  window.open(`https://paypal.me/Mayer68/${Number(price).toFixed(2)}`, "_blank");
-
-  loadBooksAndPurchases();
+  if (loginBox) loginBox.style.display = "block";
+  if (libraryBox) libraryBox.style.display = "none";
 }
 
-// 📖 Vollversion öffnen (geschützt)
-async function openFullBook(slug) {
-  const user = await requireUser();
-  if (!user) return;
-
-  const { data: book, error: bookError } = await client
-    .from("books")
-    .select("id,title,full_pdf_path")
-    .eq("slug", slug)
-    .single();
-
-  if (bookError) {
-    alert("Buch nicht gefunden.");
-    return;
-  }
-
-  const { data: purchase, error: purchaseError } = await client
-    .from("purchases")
-    .select("status")
-    .eq("user_id", user.id)
-    .eq("book_id", book.id)
-    .eq("status", "paid")
-    .single();
-
-  if (purchaseError || !purchase) {
-    alert("Dieses Buch ist für dich noch nicht freigeschaltet.");
-    return;
-  }
-
-  const path = book.full_pdf_path.replace(/^full\//, "");
+async function loadBooks() {
+  const booksContainer = document.getElementById("books");
+  if (!booksContainer) return;
 
   const { data, error } = await client
-    .storage
-    .from("full")
-    .createSignedUrl(path, 600); // 10 Minuten
+    .from("books")
+    .select("*")
+    .order("title", { ascending: true });
 
   if (error) {
-    alert("Fehler beim Laden des Buches: " + error.message);
+    booksContainer.innerHTML = "<p>Fehler beim Laden der Bücher.</p>";
+    console.error(error);
     return;
   }
 
-  window.open(data.signedUrl, "_blank");
+  booksContainer.innerHTML = "";
+
+  data.forEach((book) => {
+    const card = document.createElement("div");
+    card.className = "book-card";
+
+    card.innerHTML = `
+      <h3>${book.title ?? ""}</h3>
+      <p>Preis: ${Number(book.price ?? 0).toFixed(2)} €</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button onclick="showPreview('${book.preview ?? ""}')">Vorschau</button>
+        <button onclick="buyBook('${book.id}', '${book.price ?? ""}')">Kaufen</button>
+      </div>
+    `;
+
+    booksContainer.appendChild(card);
+  });
 }
+
+function showPreview(url) {
+  if (!url) {
+    alert("Keine Vorschau hinterlegt.");
+    return;
+  }
+  window.open(url, "_blank");
+}
+
+function buyBook(bookId, price) {
+  window.open(`https://paypal.me/Mayer68/${price}`, "_blank");
+}
+
+async function checkSession() {
+  const { data, error } = await client.auth.getSession();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const session = data.session;
+  const loginBox = document.getElementById("loginBox");
+  const libraryBox = document.getElementById("libraryBox");
+
+  if (session) {
+    if (loginBox) loginBox.style.display = "none";
+    if (libraryBox) libraryBox.style.display = "block";
+    await loadBooks();
+  } else {
+    if (loginBox) loginBox.style.display = "block";
+    if (libraryBox) libraryBox.style.display = "none";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", checkSession);
