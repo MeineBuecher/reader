@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Vorschau</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<style>
+body {
+  background:#0b0b0b;
+  color:white;
+  font-family:Arial;
+  text-align:center;
+}
+
+iframe {
+  width:90%;
+  height:80vh;
+  border:none;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Vorschau</h2>
+
+<iframe id="viewer"></iframe>
+
+<script>
+const SUPABASE_URL = "DEINE_URL";
+const SUPABASE_KEY = "DEIN_KEY";
+
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// URL lesen
+const params = new URLSearchParams(window.location.search);
+const slug = params.get("book");
+
+async function loadPreview() {
+
+  const { data } = await client
+    .from("books")
+    .select("*")
+    .eq("slug", slug)
+    .single();
+
+  const url = `https://DEINE_URL/storage/v1/object/public/${data.preview_pdf_path}`;
+
+  document.getElementById("viewer").src = url;
+}
+
+loadPreview();
+</script>
+
+</body>
+</html>
