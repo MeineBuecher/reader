@@ -14,10 +14,6 @@
       background: #f7f7f7;
     }
 
-    h1, h2 {
-      color: #222;
-    }
-
     .box {
       background: white;
       padding: 20px;
@@ -42,24 +38,15 @@
       cursor: pointer;
       background: #222;
       color: white;
+      margin-right: 10px;
     }
 
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .button-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .book-card {
-      background: #fff;
-      border: 1px solid #e5e5e5;
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 14px;
+    #status {
+      margin-top: 12px;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 8px;
+      min-height: 20px;
     }
   </style>
 </head>
@@ -70,20 +57,17 @@
     <h2>Anmelden oder registrieren</h2>
     <input id="email" type="email" placeholder="E-Mail" />
     <input id="password" type="password" placeholder="Passwort" />
-    <div class="button-row">
-<button type="button" onclick="signup()">Registrieren</button>
-<button type="button" onclick="login()">Anmelden</button>
-    </div>
+    <button id="registerBtn" type="button">Registrieren</button>
+    <button id="loginBtn" type="button">Anmelden</button>
+    <div id="status">Seite geladen...</div>
   </div>
 
   <div id="libraryBox" class="box" style="display:none;">
-    <div class="button-row" style="justify-content:space-between; align-items:center;">
-      <h2>Deine Bücher</h2>
-      <button onclick="logout()">Abmelden</button>
-    </div>
+    <h2>Deine Bücher</h2>
+    <button id="logoutBtn" type="button">Abmelden</button>
     <div id="books"></div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=2"></script>
 </body>
 </html>
