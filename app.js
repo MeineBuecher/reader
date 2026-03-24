@@ -44,7 +44,8 @@ function buildAssetUrl(path) {
     return cleanPath;
   }
 
-  return SITE_BASE_URL + cleanPath.replace(/^\/+/, "");
+  // WICHTIG: KEIN /covers/ oder /previews/ mehr
+  return "https://meinebuecher.github.io/reader/" + cleanPath.replace(/^\/+/, "");
 }
 
 async function signup() {
