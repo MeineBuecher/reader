@@ -151,15 +151,17 @@ async function hasPurchasedBook(bookId) {
   }
 
   const userId = sessionData.session.user.id;
+  const cleanBookId = String(bookId ?? "").trim();
 
-  console.log("Prüfe Kauf für user_id:", userId, "book_id:", bookId);
+  console.log("Prüfe Kauf für user_id:", userId, "book_id:", cleanBookId);
 
   const { data, error } = await client
     .from("purchases")
     .select("id, user_id, book_id, status")
     .eq("user_id", userId)
-    .eq("book_id", bookId)
-    .eq("status", "paid");
+    .eq("book_id", cleanBookId)
+    .eq("status", "paid")
+    .maybeSingle();
 
   if (error) {
     console.error("Fehler bei Kaufprüfung:", error);
@@ -169,7 +171,7 @@ async function hasPurchasedBook(bookId) {
 
   console.log("Kaufprüfung Ergebnis:", data);
 
-  return Array.isArray(data) && data.length > 0;
+  return !!data;
 }
 
 async function readBook(bookId, fullPdfPath) {
@@ -183,9 +185,12 @@ async function readBook(bookId, fullPdfPath) {
     return;
   }
 
+  const cleanBookId = String(bookId).trim();
+  const cleanFullPdfPath = String(fullPdfPath).trim();
+
   setStatus("Prüfe Freischaltung...");
 
-  const purchased = await hasPurchasedBook(bookId);
+  const purchased = await hasPurchasedBook(cleanBookId);
 
   if (!purchased) {
     alert("Dieses Buch ist noch nicht freigeschaltet. Bitte zuerst kaufen.");
@@ -197,7 +202,7 @@ async function readBook(bookId, fullPdfPath) {
 
   const { data, error } = await client.storage
     .from(PRIVATE_BOOKS_BUCKET)
-    .createSignedUrl(fullPdfPath, 300);
+    .createSignedUrl(cleanFullPdfPath, 300);
 
   if (error || !data?.signedUrl) {
     console.error("Fehler bei Signed URL:", error);
@@ -322,6 +327,10 @@ async function checkSession() {
     setStatus("Nicht eingeloggt.");
   }
 }
+
+window.showPreview = showPreview;
+window.readBook = readBook;
+window.buyBook = buyBook;
 
 document.addEventListener("DOMContentLoaded", () => {
   setStatus("DOM geladen, Buttons werden verbunden");
