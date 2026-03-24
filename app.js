@@ -1,6 +1,9 @@
 const SUPABASE_URL = "https://wveuqjdnhovwdwlrckwm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_OptCG7mWpIJhHGMr_1QF4w_IY2bObvs";
 
+// Basis-URL deiner GitHub-Seite
+const SITE_BASE_URL = "https://meinebuecher.github.io/reader/";
+
 const statusBox = document.getElementById("status");
 const loginBox = document.getElementById("loginBox");
 const libraryBox = document.getElementById("libraryBox");
@@ -19,6 +22,30 @@ if (!window.supabase) {
 }
 
 const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function buildAssetUrl(path) {
+  if (!path) return "";
+
+  const cleanPath = String(path).trim();
+
+  if (
+    cleanPath.startsWith("http://") ||
+    cleanPath.startsWith("https://")
+  ) {
+    return cleanPath;
+  }
+
+  return SITE_BASE_URL + cleanPath.replace(/^\/+/, "");
+}
 
 async function signup() {
   setStatus("Registrieren geklickt");
@@ -78,19 +105,6 @@ async function logout() {
   setStatus("Abgemeldet.");
 }
 
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function escapeJsString(value) {
-  return String(value ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
-}
-
 function showPreview(url) {
   if (!url) {
     alert("Keine Vorschau hinterlegt.");
@@ -116,68 +130,13 @@ function buyBook(bookId, price) {
   alert("Kauf-Funktion folgt als Nächstes. Buch-ID: " + bookId + " | Preis: " + price + " €");
 }
 
-function getBookTitle(book) {
-  return book.title ?? book.name ?? book.buchtitel ?? "Ohne Titel";
-}
-
-function getBookPrice(book) {
-  const rawPrice = book.price ?? book.preis ?? book.amount ?? book.betrag ?? null;
-
-  if (rawPrice === null || rawPrice === undefined || rawPrice === "") {
-    return "";
-  }
-
-  const parsed = Number(rawPrice);
-  if (Number.isNaN(parsed)) {
-    return String(rawPrice);
-  }
-
-  return parsed.toFixed(2);
-}
-
-function getBookCoverUrl(book) {
-  return (
-    book.cover_url ??
-    book.cover ??
-    book.image ??
-    book.image_url ??
-    book.bild ??
-    book.bild_url ??
-    book.coverimage ??
-    ""
-  );
-}
-
-function getBookPreviewUrl(book) {
-  return (
-    book.preview_url ??
-    book.preview ??
-    book.vorschau ??
-    book.vorschau_url ??
-    book.preview_link ??
-    ""
-  );
-}
-
-function getBookFileUrl(book) {
-  return (
-    book.book_url ??
-    book.pdf_url ??
-    book.file_url ??
-    book.datei_url ??
-    book.buch_url ??
-    book.pdf ??
-    book.datei ??
-    ""
-  );
-}
-
 async function loadBooks() {
   if (!booksContainer) return;
 
-  let query = client.from("books").select("*");
-
-  const { data, error } = await query;
+  const { data, error } = await client
+    .from("books")
+    .select("*")
+    .order("title", { ascending: true });
 
   if (error) {
     booksContainer.innerHTML = "<p>Fehler beim Laden der Bücher.</p>";
@@ -192,15 +151,7 @@ async function loadBooks() {
     return;
   }
 
-  const sortedBooks = [...data].sort((a, b) => {
-    const titleA = String(getBookTitle(a)).toLowerCase();
-    const titleB = String(getBookTitle(b)).toLowerCase();
-    return titleA.localeCompare(titleB, "de");
-  });
-
-  console.log("Books-Daten:", sortedBooks);
-
-  sortedBooks.forEach((book) => {
+  data.forEach((book) => {
     const card = document.createElement("div");
     card.className = "book-card";
     card.style.background = "#fff";
@@ -209,11 +160,15 @@ async function loadBooks() {
     card.style.padding = "16px";
     card.style.marginBottom = "14px";
 
-    const title = escapeHtml(getBookTitle(book));
-    const priceValue = getBookPrice(book);
-    const coverUrl = getBookCoverUrl(book);
-    const previewUrl = getBookPreviewUrl(book);
-    const bookUrl = getBookFileUrl(book);
+    const title = escapeHtml(book.title ?? "Ohne Titel");
+    const rawPrice = book.price_eur;
+    const price =
+      rawPrice !== null && rawPrice !== undefined && rawPrice !== ""
+        ? Number(rawPrice).toFixed(2)
+        : "0.00";
+
+    const coverUrl = buildAssetUrl(book.cover_path);
+    const previewUrl = buildAssetUrl(book.preview_pdf_path);
     const bookId = book.id ?? "";
 
     let coverHtml = "";
@@ -223,24 +178,19 @@ async function loadBooks() {
           src="${escapeHtml(coverUrl)}"
           alt="${title}"
           style="max-width:120px; display:block; margin-bottom:12px; border-radius:8px; cursor:pointer;"
-          onclick="showPreview('${escapeJsString(coverUrl)}')"
+          onclick="showPreview('${String(coverUrl).replace(/'/g, "\\'")}')"
         >
       `;
     }
 
-    const priceHtml = priceValue ? `${escapeHtml(priceValue)} €` : "nicht gefunden";
-
     card.innerHTML = `
       ${coverHtml}
       <h3>${title}</h3>
-      <p>Preis: ${priceHtml}</p>
+      <p>Preis: ${price} €</p>
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
-        <button type="button" onclick="showPreview('${escapeJsString(previewUrl)}')">Vorschau</button>
-        <button type="button" onclick="readBook('${escapeJsString(bookUrl)}')">Lesen</button>
-        <button type="button" onclick="buyBook('${escapeJsString(bookId)}', '${escapeJsString(priceValue)}')">Kaufen</button>
-      </div>
-      <div style="margin-top:10px; font-size:12px; color:#666;">
-        Felder gefunden: ${escapeHtml(Object.keys(book).join(", "))}
+        <button type="button" onclick="showPreview('${String(previewUrl).replace(/'/g, "\\'")}')">Vorschau</button>
+        <button type="button" onclick="readBook('${String(previewUrl).replace(/'/g, "\\'")}')">Lesen</button>
+        <button type="button" onclick="buyBook('${String(bookId).replace(/'/g, "\\'")}', '${String(rawPrice ?? "").replace(/'/g, "\\'")}')">Kaufen</button>
       </div>
     `;
 
