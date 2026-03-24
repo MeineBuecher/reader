@@ -1,75 +1,67 @@
 const SUPABASE_URL = "https://wveuqjdnhovwdwlrckwm.supabase.co";
-const SUPABASE_KEY = "sb_publishable_OptCG7mWpIJhHGMr_1QF4w_IY2bObvs";
+const SUPABASE_KEY = "DEIN_SUPABASE_ANON_KEY_HIER_EINFUEGEN";
 
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const statusBox = document.getElementById("status");
+const loginBox = document.getElementById("loginBox");
+const libraryBox = document.getElementById("libraryBox");
+const booksContainer = document.getElementById("books");
+
+function setStatus(text) {
+  if (statusBox) statusBox.textContent = text;
+  console.log(text);
+}
+
+setStatus("app.js wurde geladen");
+
+if (!window.supabase) {
+  setStatus("Fehler: Supabase-Skript wurde nicht geladen.");
+  throw new Error("Supabase library fehlt.");
+}
+
+const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function signup() {
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
+  setStatus("Registrieren geklickt");
 
-  if (!emailInput || !passwordInput) {
-    alert("Eingabefelder nicht gefunden.");
-    return;
-  }
-
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value;
 
   if (!email || !password) {
-    alert("Bitte E-Mail und Passwort eingeben.");
+    setStatus("Bitte E-Mail und Passwort eingeben.");
     return;
   }
 
-  const { data, error } = await client.auth.signUp({
-    email,
-    password
-  });
+  const { error } = await client.auth.signUp({ email, password });
 
   if (error) {
-    alert("Registrierung fehlgeschlagen: " + error.message);
+    setStatus("Registrierung fehlgeschlagen: " + error.message);
     return;
   }
 
-  alert("Registrierung erfolgreich. Du kannst dich jetzt anmelden.");
-  console.log("signup:", data);
+  setStatus("Registrierung erfolgreich.");
 }
 
 async function login() {
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
+  setStatus("Anmelden geklickt");
 
-  if (!emailInput || !passwordInput) {
-    alert("Eingabefelder nicht gefunden.");
-    return;
-  }
-
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value;
 
   if (!email || !password) {
-    alert("Bitte E-Mail und Passwort eingeben.");
+    setStatus("Bitte E-Mail und Passwort eingeben.");
     return;
   }
 
-  const { data, error } = await client.auth.signInWithPassword({
-    email,
-    password
-  });
+  const { error } = await client.auth.signInWithPassword({ email, password });
 
   if (error) {
-    alert("Anmeldung fehlgeschlagen: " + error.message);
+    setStatus("Anmeldung fehlgeschlagen: " + error.message);
     return;
   }
 
-  alert("Login erfolgreich.");
-  console.log("login:", data);
-
-  const loginBox = document.getElementById("loginBox");
-  const libraryBox = document.getElementById("libraryBox");
-
-  if (loginBox) loginBox.style.display = "none";
-  if (libraryBox) libraryBox.style.display = "block";
-
+  setStatus("Login erfolgreich.");
+  loginBox.style.display = "none";
+  libraryBox.style.display = "block";
   await loadBooks();
 }
 
@@ -77,19 +69,16 @@ async function logout() {
   const { error } = await client.auth.signOut();
 
   if (error) {
-    alert("Abmeldung fehlgeschlagen: " + error.message);
+    setStatus("Abmeldung fehlgeschlagen: " + error.message);
     return;
   }
 
-  const loginBox = document.getElementById("loginBox");
-  const libraryBox = document.getElementById("libraryBox");
-
-  if (loginBox) loginBox.style.display = "block";
-  if (libraryBox) libraryBox.style.display = "none";
+  loginBox.style.display = "block";
+  libraryBox.style.display = "none";
+  setStatus("Abgemeldet.");
 }
 
 async function loadBooks() {
-  const booksContainer = document.getElementById("books");
   if (!booksContainer) return;
 
   const { data, error } = await client
@@ -99,61 +88,60 @@ async function loadBooks() {
 
   if (error) {
     booksContainer.innerHTML = "<p>Fehler beim Laden der Bücher.</p>";
-    console.error(error);
+    setStatus("Fehler beim Laden der Bücher: " + error.message);
     return;
   }
 
   booksContainer.innerHTML = "";
 
+  if (!data || data.length === 0) {
+    booksContainer.innerHTML = "<p>Noch keine Bücher vorhanden.</p>";
+    return;
+  }
+
   data.forEach((book) => {
     const card = document.createElement("div");
-    card.className = "book-card";
+    card.style.background = "#fff";
+    card.style.border = "1px solid #e5e5e5";
+    card.style.borderRadius = "10px";
+    card.style.padding = "16px";
+    card.style.marginBottom = "14px";
 
     card.innerHTML = `
       <h3>${book.title ?? ""}</h3>
       <p>Preis: ${Number(book.price ?? 0).toFixed(2)} €</p>
-      <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button type="button" onclick="showPreview('${book.preview ?? ""}')">Vorschau</button>
-        <button type="button" onclick="buyBook('${book.id}', '${book.price ?? ""}')">Kaufen</button>
-      </div>
     `;
 
     booksContainer.appendChild(card);
   });
 }
 
-function showPreview(url) {
-  if (!url) {
-    alert("Keine Vorschau hinterlegt.");
-    return;
-  }
-  window.open(url, "_blank");
-}
-
-function buyBook(bookId, price) {
-  window.open(`https://paypal.me/Mayer68/${price}`, "_blank");
-}
-
 async function checkSession() {
   const { data, error } = await client.auth.getSession();
 
   if (error) {
-    console.error(error);
+    setStatus("Session-Fehler: " + error.message);
     return;
   }
 
-  const session = data.session;
-  const loginBox = document.getElementById("loginBox");
-  const libraryBox = document.getElementById("libraryBox");
-
-  if (session) {
-    if (loginBox) loginBox.style.display = "none";
-    if (libraryBox) libraryBox.style.display = "block";
+  if (data.session) {
+    loginBox.style.display = "none";
+    libraryBox.style.display = "block";
+    setStatus("Bereits eingeloggt.");
     await loadBooks();
   } else {
-    if (loginBox) loginBox.style.display = "block";
-    if (libraryBox) libraryBox.style.display = "none";
+    loginBox.style.display = "block";
+    libraryBox.style.display = "none";
+    setStatus("Nicht eingeloggt.");
   }
 }
 
-document.addEventListener("DOMContentLoaded", checkSession);
+document.addEventListener("DOMContentLoaded", () => {
+  setStatus("DOM geladen, Buttons werden verbunden");
+
+  document.getElementById("registerBtn")?.addEventListener("click", signup);
+  document.getElementById("loginBtn")?.addEventListener("click", login);
+  document.getElementById("logoutBtn")?.addEventListener("click", logout);
+
+  checkSession();
+});
