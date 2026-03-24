@@ -1,3 +1,4 @@
+const PRIVATE_BOOKS_BUCKET = "books-private";
 const SUPABASE_URL = "https://wveuqjdnhovwdwlrckwm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_OptCG7mWpIJhHGMr_1QF4w_IY2bObvs";
 
@@ -133,14 +134,14 @@ async function hasPurchasedBook(bookId) {
   return Array.isArray(data) && data.length > 0;
 }
 
-async function readBook(bookId, fullBookUrl) {
+async function readBook(bookId, fullPdfPath) {
   if (!bookId) {
     alert("Keine Buch-ID hinterlegt.");
     return;
   }
 
-  if (!fullBookUrl) {
-    alert("Keine Buchdatei hinterlegt.");
+  if (!fullPdfPath) {
+    alert("Keine Vollversion hinterlegt.");
     return;
   }
 
@@ -151,7 +152,17 @@ async function readBook(bookId, fullBookUrl) {
     return;
   }
 
-  window.open(fullBookUrl, "_blank");
+  const { data, error } = await client.storage
+    .from(PRIVATE_BOOKS_BUCKET)
+    .createSignedUrl(fullPdfPath, 60);
+
+  if (error || !data?.signedUrl) {
+    console.error(error);
+    alert("Geschützter Zugriff konnte nicht erstellt werden.");
+    return;
+  }
+
+  window.open(data.signedUrl, "_blank");
 }
 
 function buyBook(bookId, price) {
