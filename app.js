@@ -32,6 +32,10 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
+function escapeJsString(value) {
+  return String(value ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
 function buildAssetUrl(path) {
   if (!path) return "";
 
@@ -42,6 +46,33 @@ function buildAssetUrl(path) {
   }
 
   return SITE_BASE_URL + cleanPath.replace(/^\/+/, "");
+}
+
+function getBookDescription(book) {
+  const title = String(book?.title ?? "").trim();
+
+  const descriptions = {
+    "Das freie Hören":
+      "Ein Buch über das bewusste Hören in einer Welt voller Stimmen. Es lädt dazu ein, wieder die eigene innere Wahrheit wahrzunehmen.",
+    "Das Universum als lebendiges Wesen":
+      "Eine tiefgehende Reise durch Bewusstsein, Liebe und die Frage, ob das Universum mehr ist als nur Materie.",
+    "Der Mensch und sein Glauben":
+      "Ein stiller Blick auf den Glauben des Menschen – jenseits von Grenzen, Institutionen und äußeren Zuschreibungen.",
+    "Die 99 Namen Allahs":
+      "Eine Annäherung an die 99 Namen Allahs als lebendige Erinnerung, die Herz, Sprache und Alltag miteinander verbindet.",
+    "Die neue Gewalt":
+      "Ein aufrüttelnder Blick auf die neue Form von Gewalt, die nicht immer sichtbar ist und dennoch tief in unsere Gesellschaft eingreift.",
+    "Die Übermittler des Universums":
+      "Ein Buch über das, was zwischen den Welten wirkt – über Hinweise, Verbindung und die stillen Impulse des Lebens.",
+    "Liebe, das erste Licht":
+      "Eine Erinnerung daran, dass Liebe nicht nur Gefühl ist, sondern Ursprung, Bewegung und erste Kraft des Daseins.",
+    "Liebe - das erste Licht":
+      "Eine Erinnerung daran, dass Liebe nicht nur Gefühl ist, sondern Ursprung, Bewegung und erste Kraft des Daseins.",
+    "Meine Quantenethik":
+      "Ein neuer Blick auf Verantwortung, Bewusstsein und die Frage, wie Denken, Wahrnehmung und Handeln zusammenwirken."
+  };
+
+  return descriptions[title] || "Eine besondere Veröffentlichung aus deiner Bücherei.";
 }
 
 async function signup() {
@@ -176,8 +207,6 @@ function buyBook(bookId, price) {
     return;
   }
 
-  // Vorläufig: PayPal-Link öffnen
-  // Du kannst später pro Buch eigene Links hinterlegen
   window.open(`https://paypal.me/Mayer68/${price}`, "_blank");
 }
 
@@ -205,47 +234,52 @@ async function loadBooks() {
   data.forEach((book) => {
     const card = document.createElement("div");
     card.className = "book-card";
-    card.style.background = "#fff";
-    card.style.border = "1px solid #e5e5e5";
-    card.style.borderRadius = "10px";
-    card.style.padding = "16px";
-    card.style.marginBottom = "14px";
 
     const title = escapeHtml(book.title ?? "Ohne Titel");
+    const description = escapeHtml(getBookDescription(book));
     const rawPrice = book.price_eur;
     const price =
       rawPrice !== null && rawPrice !== undefined && rawPrice !== ""
-        ? Number(rawPrice).toFixed(2)
-        : "0.00";
+        ? Number(rawPrice).toFixed(2).replace(".", ",")
+        : "0,00";
 
     const coverUrl = buildAssetUrl(book.cover_path);
     const previewUrl = buildAssetUrl(book.preview_pdf_path);
-
-    // Hier brauchst du in deiner books-Tabelle noch eine Spalte für die Vollversion
     const fullPdfPath = book.full_pdf_path || "";
-
     const bookId = book.id ?? "";
 
-    let coverHtml = "";
-    if (coverUrl) {
-      coverHtml = `
+    const previewUrlEscaped = escapeJsString(previewUrl);
+    const fullPdfPathEscaped = escapeJsString(fullPdfPath);
+    const bookIdEscaped = escapeJsString(bookId);
+    const rawPriceEscaped = escapeJsString(rawPrice ?? "");
+    const coverUrlEscaped = escapeHtml(coverUrl);
+
+    const coverHtml = coverUrl
+      ? `
         <img
-          src="${escapeHtml(coverUrl)}"
+          src="${coverUrlEscaped}"
           alt="${title}"
-          style="max-width:120px; display:block; margin-bottom:12px; border-radius:8px; cursor:pointer;"
-          onclick="showPreview('${String(coverUrl).replace(/'/g, "\\'")}')"
+          class="book-cover"
+          onclick="showPreview('${previewUrlEscaped}')"
         >
+      `
+      : `
+        <div class="book-cover" style="display:flex;align-items:center;justify-content:center;background:#e5e7eb;color:#6b7280;">
+          Kein Cover
+        </div>
       `;
-    }
 
     card.innerHTML = `
       ${coverHtml}
-      <h3>${title}</h3>
-      <p>Preis: ${price} €</p>
-      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
-        <button type="button" onclick="showPreview('${String(previewUrl).replace(/'/g, "\\'")}')">Vorschau</button>
-       <button type="button" onclick="readBook('${String(bookId).replace(/'/g, "\\'")}', '${String(fullPdfPath).replace(/'/g, "\\'")}')">Lesen</button>
-        <button type="button" onclick="buyBook('${String(bookId).replace(/'/g, "\\'")}', '${String(rawPrice ?? "").replace(/'/g, "\\'")}')">Kaufen</button>
+      <div class="book-info">
+        <h3 class="book-title">${title}</h3>
+        <p class="book-description">${description}</p>
+        <div class="book-price">Preis: ${price} €</div>
+        <div class="book-buttons">
+          <button type="button" onclick="showPreview('${previewUrlEscaped}')">Vorschau</button>
+          <button type="button" onclick="readBook('${bookIdEscaped}', '${fullPdfPathEscaped}')">Lesen</button>
+          <button type="button" onclick="buyBook('${bookIdEscaped}', '${rawPriceEscaped}')">Kaufen</button>
+        </div>
       </div>
     `;
 
