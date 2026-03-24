@@ -1,7 +1,6 @@
 const SUPABASE_URL = "https://wveuqjdnhovwdwlrckwm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_OptCG7mWpIJhHGMr_1QF4w_IY2bObvs";
 
-// Basis-URL deiner GitHub-Seite
 const SITE_BASE_URL = "https://meinebuecher.github.io/reader/";
 
 const statusBox = document.getElementById("status");
@@ -37,15 +36,11 @@ function buildAssetUrl(path) {
 
   const cleanPath = String(path).trim();
 
-  if (
-    cleanPath.startsWith("http://") ||
-    cleanPath.startsWith("https://")
-  ) {
+  if (cleanPath.startsWith("http://") || cleanPath.startsWith("https://")) {
     return cleanPath;
   }
 
-  // WICHTIG: KEIN /covers/ oder /previews/ mehr
-  return "https://meinebuecher.github.io/reader/" + cleanPath.replace(/^\/+/, "");
+  return SITE_BASE_URL + cleanPath.replace(/^\/+/, "");
 }
 
 async function signup() {
@@ -114,12 +109,49 @@ function showPreview(url) {
   window.open(url, "_blank");
 }
 
-function readBook(url) {
-  if (!url) {
-    alert("Kein Buchlink hinterlegt.");
+async function hasPurchasedBook(bookId) {
+  const { data: sessionData, error: sessionError } = await client.auth.getSession();
+
+  if (sessionError || !sessionData?.session?.user) {
+    return false;
+  }
+
+  const userId = sessionData.session.user.id;
+
+  const { data, error } = await client
+    .from("purchases")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("book_id", bookId)
+    .limit(1);
+
+  if (error) {
+    console.error("Fehler bei Kaufprüfung:", error);
+    return false;
+  }
+
+  return Array.isArray(data) && data.length > 0;
+}
+
+async function readBook(bookId, fullBookUrl) {
+  if (!bookId) {
+    alert("Keine Buch-ID hinterlegt.");
     return;
   }
-  window.open(url, "_blank");
+
+  if (!fullBookUrl) {
+    alert("Keine Buchdatei hinterlegt.");
+    return;
+  }
+
+  const purchased = await hasPurchasedBook(bookId);
+
+  if (!purchased) {
+    alert("Dieses Buch ist noch nicht freigeschaltet. Bitte zuerst kaufen.");
+    return;
+  }
+
+  window.open(fullBookUrl, "_blank");
 }
 
 function buyBook(bookId, price) {
@@ -128,7 +160,14 @@ function buyBook(bookId, price) {
     return;
   }
 
-  alert("Kauf-Funktion folgt als Nächstes. Buch-ID: " + bookId + " | Preis: " + price + " €");
+  if (!price) {
+    alert("Kein Preis hinterlegt.");
+    return;
+  }
+
+  // Vorläufig: PayPal-Link öffnen
+  // Du kannst später pro Buch eigene Links hinterlegen
+  window.open(`https://paypal.me/Mayer68/${price}`, "_blank");
 }
 
 async function loadBooks() {
@@ -170,6 +209,10 @@ async function loadBooks() {
 
     const coverUrl = buildAssetUrl(book.cover_path);
     const previewUrl = buildAssetUrl(book.preview_pdf_path);
+
+    // Hier brauchst du in deiner books-Tabelle noch eine Spalte für die Vollversion
+    const fullBookUrl = buildAssetUrl(book.book_pdf_path || "");
+
     const bookId = book.id ?? "";
 
     let coverHtml = "";
@@ -190,7 +233,7 @@ async function loadBooks() {
       <p>Preis: ${price} €</p>
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
         <button type="button" onclick="showPreview('${String(previewUrl).replace(/'/g, "\\'")}')">Vorschau</button>
-        <button type="button" onclick="readBook('${String(previewUrl).replace(/'/g, "\\'")}')">Lesen</button>
+        <button type="button" onclick="readBook('${String(bookId).replace(/'/g, "\\'")}', '${String(fullBookUrl).replace(/'/g, "\\'")}')">Lesen</button>
         <button type="button" onclick="buyBook('${String(bookId).replace(/'/g, "\\'")}', '${String(rawPrice ?? "").replace(/'/g, "\\'")}')">Kaufen</button>
       </div>
     `;
