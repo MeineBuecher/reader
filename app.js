@@ -211,7 +211,7 @@ async function loadBooks() {
     const previewUrl = buildAssetUrl(book.preview_pdf_path);
 
     // Hier brauchst du in deiner books-Tabelle noch eine Spalte für die Vollversion
-    const fullBookUrl = buildAssetUrl(book.book_pdf_path || "");
+    const fullBookUrl = buildAssetUrl(book.full_pdf_path || "");
 
     const bookId = book.id ?? "";
 
