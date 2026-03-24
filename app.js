@@ -145,22 +145,29 @@ async function hasPurchasedBook(bookId) {
   const { data: sessionData, error: sessionError } = await client.auth.getSession();
 
   if (sessionError || !sessionData?.session?.user) {
+    console.error("Keine gültige Session:", sessionError);
+    setStatus("Keine gültige Anmeldung gefunden.");
     return false;
   }
 
   const userId = sessionData.session.user.id;
 
+  console.log("Prüfe Kauf für user_id:", userId, "book_id:", bookId);
+
   const { data, error } = await client
     .from("purchases")
-    .select("id")
+    .select("id, user_id, book_id, status")
     .eq("user_id", userId)
     .eq("book_id", bookId)
-    .limit(1);
+    .eq("status", "paid");
 
   if (error) {
     console.error("Fehler bei Kaufprüfung:", error);
+    setStatus("Fehler bei Kaufprüfung: " + error.message);
     return false;
   }
+
+  console.log("Kaufprüfung Ergebnis:", data);
 
   return Array.isArray(data) && data.length > 0;
 }
@@ -176,23 +183,30 @@ async function readBook(bookId, fullPdfPath) {
     return;
   }
 
+  setStatus("Prüfe Freischaltung...");
+
   const purchased = await hasPurchasedBook(bookId);
 
   if (!purchased) {
     alert("Dieses Buch ist noch nicht freigeschaltet. Bitte zuerst kaufen.");
+    setStatus("Buch nicht freigeschaltet.");
     return;
   }
+
+  setStatus("Freigeschaltet. Geschützter Link wird erstellt...");
 
   const { data, error } = await client.storage
     .from(PRIVATE_BOOKS_BUCKET)
-    .createSignedUrl(fullPdfPath, 60);
+    .createSignedUrl(fullPdfPath, 300);
 
   if (error || !data?.signedUrl) {
-    console.error(error);
-    alert("Geschützter Zugriff konnte nicht erstellt werden.");
+    console.error("Fehler bei Signed URL:", error);
+    alert("Geschützter Zugriff konnte nicht erstellt werden: " + (error?.message || "Unbekannter Fehler"));
+    setStatus("Fehler beim Erstellen des geschützten Zugriffs.");
     return;
   }
 
+  setStatus("Buch wird geöffnet...");
   window.open(data.signedUrl, "_blank");
 }
 
