@@ -60,8 +60,8 @@ async function login() {
   }
 
   setStatus("Login erfolgreich.");
-  loginBox.style.display = "none";
-  libraryBox.style.display = "block";
+  if (loginBox) loginBox.style.display = "none";
+  if (libraryBox) libraryBox.style.display = "block";
   await loadBooks();
 }
 
@@ -73,9 +73,43 @@ async function logout() {
     return;
   }
 
-  loginBox.style.display = "block";
-  libraryBox.style.display = "none";
+  if (loginBox) loginBox.style.display = "block";
+  if (libraryBox) libraryBox.style.display = "none";
   setStatus("Abgemeldet.");
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function showPreview(url) {
+  if (!url) {
+    alert("Keine Vorschau hinterlegt.");
+    return;
+  }
+  window.open(url, "_blank");
+}
+
+function readBook(url) {
+  if (!url) {
+    alert("Kein Buchlink hinterlegt.");
+    return;
+  }
+  window.open(url, "_blank");
+}
+
+function buyBook(bookId, price) {
+  if (!bookId) {
+    alert("Keine Buch-ID hinterlegt.");
+    return;
+  }
+
+  alert("Kauf-Funktion folgt als Nächstes. Buch-ID: " + bookId + " | Preis: " + price + " €");
 }
 
 async function loadBooks() {
@@ -101,19 +135,48 @@ async function loadBooks() {
 
   data.forEach((book) => {
     const card = document.createElement("div");
+    card.className = "book-card";
     card.style.background = "#fff";
     card.style.border = "1px solid #e5e5e5";
     card.style.borderRadius = "10px";
     card.style.padding = "16px";
     card.style.marginBottom = "14px";
 
+    const title = escapeHtml(book.title ?? "");
+    const price = Number(book.price ?? 0).toFixed(2);
+
+    const coverUrl = book.cover_url || book.cover || "";
+    const previewUrl = book.preview_url || book.preview || "";
+    const bookUrl = book.book_url || book.pdf_url || book.file_url || "";
+    const bookId = book.id ?? "";
+
+    let coverHtml = "";
+    if (coverUrl) {
+      coverHtml = `
+        <img
+          src="${escapeHtml(coverUrl)}"
+          alt="${title}"
+          style="max-width:120px; display:block; margin-bottom:12px; border-radius:8px; cursor:pointer;"
+          onclick="showPreview('${String(coverUrl).replace(/'/g, "\\'")}')"
+        >
+      `;
+    }
+
     card.innerHTML = `
-      <h3>${book.title ?? ""}</h3>
-      <p>Preis: ${Number(book.price ?? 0).toFixed(2)} €</p>
+      ${coverHtml}
+      <h3>${title}</h3>
+      <p>Preis: ${price} €</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+        <button type="button" onclick="showPreview('${String(previewUrl).replace(/'/g, "\\'")}')">Vorschau</button>
+        <button type="button" onclick="readBook('${String(bookUrl).replace(/'/g, "\\'")}')">Lesen</button>
+        <button type="button" onclick="buyBook('${String(bookId).replace(/'/g, "\\'")}', '${String(book.price ?? "").replace(/'/g, "\\'")}')">Kaufen</button>
+      </div>
     `;
 
     booksContainer.appendChild(card);
   });
+
+  setStatus("Bücher geladen.");
 }
 
 async function checkSession() {
@@ -125,13 +188,13 @@ async function checkSession() {
   }
 
   if (data.session) {
-    loginBox.style.display = "none";
-    libraryBox.style.display = "block";
+    if (loginBox) loginBox.style.display = "none";
+    if (libraryBox) libraryBox.style.display = "block";
     setStatus("Bereits eingeloggt.");
     await loadBooks();
   } else {
-    loginBox.style.display = "block";
-    libraryBox.style.display = "none";
+    if (loginBox) loginBox.style.display = "block";
+    if (libraryBox) libraryBox.style.display = "none";
     setStatus("Nicht eingeloggt.");
   }
 }
