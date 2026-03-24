@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://wveuqjdnhovwdwlrckwm.supabase.co";
-const SUPABASE_KEY = "DEIN_SUPABASE_ANON_KEY_HIER_EINFUEGEN";
+const SUPABASE_KEY = "sb_publishable_OptCG7mWpIJhHGMr_1QF4w_IY2bObvs";
 
 const statusBox = document.getElementById("status");
 const loginBox = document.getElementById("loginBox");
