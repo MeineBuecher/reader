@@ -1,5 +1,5 @@
-const SUPABASE_URL = https://wveuqjdnhovwdwlrckwm.supabase.co;
-const SUPABASE_KEY = sb_publishable_OptCG7mWpIJhHGMr_1QF4w_IY2bObvs;
+const SUPABASE_URL = "https://wveuqjdnhovwdwlrckwm.supabase.co";
+const SUPABASE_KEY = "sb_publishable_OptCG7mWpIJhHGMr_1QF4w_IY2bObvs";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -113,8 +113,8 @@ async function loadBooks() {
       <h3>${book.title ?? ""}</h3>
       <p>Preis: ${Number(book.price ?? 0).toFixed(2)} €</p>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button onclick="showPreview('${book.preview ?? ""}')">Vorschau</button>
-        <button onclick="buyBook('${book.id}', '${book.price ?? ""}')">Kaufen</button>
+        <button type="button" onclick="showPreview('${book.preview ?? ""}')">Vorschau</button>
+        <button type="button" onclick="buyBook('${book.id}', '${book.price ?? ""}')">Kaufen</button>
       </div>
     `;
 
