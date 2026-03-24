@@ -87,6 +87,10 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
+function escapeJsString(value) {
+  return String(value ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
 function showPreview(url) {
   if (!url) {
     alert("Keine Vorschau hinterlegt.");
@@ -112,13 +116,68 @@ function buyBook(bookId, price) {
   alert("Kauf-Funktion folgt als Nächstes. Buch-ID: " + bookId + " | Preis: " + price + " €");
 }
 
+function getBookTitle(book) {
+  return book.title ?? book.name ?? book.buchtitel ?? "Ohne Titel";
+}
+
+function getBookPrice(book) {
+  const rawPrice = book.price ?? book.preis ?? book.amount ?? book.betrag ?? null;
+
+  if (rawPrice === null || rawPrice === undefined || rawPrice === "") {
+    return "";
+  }
+
+  const parsed = Number(rawPrice);
+  if (Number.isNaN(parsed)) {
+    return String(rawPrice);
+  }
+
+  return parsed.toFixed(2);
+}
+
+function getBookCoverUrl(book) {
+  return (
+    book.cover_url ??
+    book.cover ??
+    book.image ??
+    book.image_url ??
+    book.bild ??
+    book.bild_url ??
+    book.coverimage ??
+    ""
+  );
+}
+
+function getBookPreviewUrl(book) {
+  return (
+    book.preview_url ??
+    book.preview ??
+    book.vorschau ??
+    book.vorschau_url ??
+    book.preview_link ??
+    ""
+  );
+}
+
+function getBookFileUrl(book) {
+  return (
+    book.book_url ??
+    book.pdf_url ??
+    book.file_url ??
+    book.datei_url ??
+    book.buch_url ??
+    book.pdf ??
+    book.datei ??
+    ""
+  );
+}
+
 async function loadBooks() {
   if (!booksContainer) return;
 
-  const { data, error } = await client
-    .from("books")
-    .select("*")
-    .order("title", { ascending: true });
+  let query = client.from("books").select("*");
+
+  const { data, error } = await query;
 
   if (error) {
     booksContainer.innerHTML = "<p>Fehler beim Laden der Bücher.</p>";
@@ -133,7 +192,15 @@ async function loadBooks() {
     return;
   }
 
-  data.forEach((book) => {
+  const sortedBooks = [...data].sort((a, b) => {
+    const titleA = String(getBookTitle(a)).toLowerCase();
+    const titleB = String(getBookTitle(b)).toLowerCase();
+    return titleA.localeCompare(titleB, "de");
+  });
+
+  console.log("Books-Daten:", sortedBooks);
+
+  sortedBooks.forEach((book) => {
     const card = document.createElement("div");
     card.className = "book-card";
     card.style.background = "#fff";
@@ -142,12 +209,11 @@ async function loadBooks() {
     card.style.padding = "16px";
     card.style.marginBottom = "14px";
 
-    const title = escapeHtml(book.title ?? "");
-    const price = Number(book.price ?? 0).toFixed(2);
-
-    const coverUrl = book.cover_url || book.cover || "";
-    const previewUrl = book.preview_url || book.preview || "";
-    const bookUrl = book.book_url || book.pdf_url || book.file_url || "";
+    const title = escapeHtml(getBookTitle(book));
+    const priceValue = getBookPrice(book);
+    const coverUrl = getBookCoverUrl(book);
+    const previewUrl = getBookPreviewUrl(book);
+    const bookUrl = getBookFileUrl(book);
     const bookId = book.id ?? "";
 
     let coverHtml = "";
@@ -157,19 +223,24 @@ async function loadBooks() {
           src="${escapeHtml(coverUrl)}"
           alt="${title}"
           style="max-width:120px; display:block; margin-bottom:12px; border-radius:8px; cursor:pointer;"
-          onclick="showPreview('${String(coverUrl).replace(/'/g, "\\'")}')"
+          onclick="showPreview('${escapeJsString(coverUrl)}')"
         >
       `;
     }
 
+    const priceHtml = priceValue ? `${escapeHtml(priceValue)} €` : "nicht gefunden";
+
     card.innerHTML = `
       ${coverHtml}
       <h3>${title}</h3>
-      <p>Preis: ${price} €</p>
+      <p>Preis: ${priceHtml}</p>
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
-        <button type="button" onclick="showPreview('${String(previewUrl).replace(/'/g, "\\'")}')">Vorschau</button>
-        <button type="button" onclick="readBook('${String(bookUrl).replace(/'/g, "\\'")}')">Lesen</button>
-        <button type="button" onclick="buyBook('${String(bookId).replace(/'/g, "\\'")}', '${String(book.price ?? "").replace(/'/g, "\\'")}')">Kaufen</button>
+        <button type="button" onclick="showPreview('${escapeJsString(previewUrl)}')">Vorschau</button>
+        <button type="button" onclick="readBook('${escapeJsString(bookUrl)}')">Lesen</button>
+        <button type="button" onclick="buyBook('${escapeJsString(bookId)}', '${escapeJsString(priceValue)}')">Kaufen</button>
+      </div>
+      <div style="margin-top:10px; font-size:12px; color:#666;">
+        Felder gefunden: ${escapeHtml(Object.keys(book).join(", "))}
       </div>
     `;
 
