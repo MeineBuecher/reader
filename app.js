@@ -222,7 +222,7 @@ async function loadBooks() {
     const previewUrl = buildAssetUrl(book.preview_pdf_path);
 
     // Hier brauchst du in deiner books-Tabelle noch eine Spalte für die Vollversion
-    const fullBookUrl = buildAssetUrl(book.full_pdf_path || "");
+    const fullPdfPath = book.full_pdf_path || "";
 
     const bookId = book.id ?? "";
 
@@ -244,7 +244,7 @@ async function loadBooks() {
       <p>Preis: ${price} €</p>
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
         <button type="button" onclick="showPreview('${String(previewUrl).replace(/'/g, "\\'")}')">Vorschau</button>
-        <button type="button" onclick="readBook('${String(bookId).replace(/'/g, "\\'")}', '${String(fullBookUrl).replace(/'/g, "\\'")}')">Lesen</button>
+       <button type="button" onclick="readBook('${String(bookId).replace(/'/g, "\\'")}', '${String(fullPdfPath).replace(/'/g, "\\'")}')">Lesen</button>
         <button type="button" onclick="buyBook('${String(bookId).replace(/'/g, "\\'")}', '${String(rawPrice ?? "").replace(/'/g, "\\'")}')">Kaufen</button>
       </div>
     `;
