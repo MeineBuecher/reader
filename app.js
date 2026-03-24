@@ -1,4 +1,4 @@
-const PRIVATE_BOOKS_BUCKET = "books-private";
+const PRIVATE_BOOKS_BUCKET = "books.private";
 const SUPABASE_URL = "https://wveuqjdnhovwdwlrckwm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_OptCG7mWpIJhHGMr_1QF4w_IY2bObvs";
 
