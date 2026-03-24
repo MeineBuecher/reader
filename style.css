@@ -3,7 +3,7 @@
 body {
   background:
     linear-gradient(rgba(4, 8, 20, 0.72), rgba(4, 8, 20, 0.82)),
-    url("galaxie.jpg") no-repeat center center fixed;
+    url("Hintergrung.jpg") no-repeat center center fixed;
   background-size: cover;
   color: #f3f4f6;
 }
