@@ -10,6 +10,9 @@ const libraryBox = document.getElementById("libraryBox");
 const booksContainer = document.getElementById("books");
 const authorRequestForm = document.getElementById("authorRequestForm");
 const authorRequestStatusBox = document.getElementById("authorRequestStatus");
+const logoutBtn = document.getElementById("logoutBtn");
+
+let pendingAction = null;
 
 function setStatus(text) {
   if (statusBox) statusBox.textContent = text;
@@ -90,6 +93,53 @@ function getPassword() {
   return document.getElementById("password")?.value || "";
 }
 
+function showLoginForAction(message) {
+  if (loginBox) {
+    loginBox.style.display = "block";
+    loginBox.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  if (message) setStatus(message);
+}
+
+async function getCurrentUser() {
+  const { data, error } = await client.auth.getSession();
+
+  if (error) {
+    console.error("Session-Fehler:", error);
+    return null;
+  }
+
+  return data?.session?.user || null;
+}
+
+async function ensureLoggedIn(actionData) {
+  const user = await getCurrentUser();
+
+  if (user) {
+    return true;
+  }
+
+  pendingAction = actionData;
+  showLoginForAction("Bitte melde dich an, um zu kaufen oder die Vollversion zu lesen.");
+  return false;
+}
+
+async function runPendingAction() {
+  if (!pendingAction) return;
+
+  const action = pendingAction;
+  pendingAction = null;
+
+  if (action.type === "read") {
+    await readBook(action.bookId, action.fullPdfPath, true);
+    return;
+  }
+
+  if (action.type === "buy") {
+    await buyBook(action.bookId, action.price, true);
+  }
+}
+
 async function sendMagicLink(email) {
   const cleanEmail = String(email || "").trim();
 
@@ -150,10 +200,11 @@ async function login() {
     return;
   }
 
-  setStatus("Login erfolgreich.");
   if (loginBox) loginBox.style.display = "none";
-  if (libraryBox) libraryBox.style.display = "block";
-  await loadBooks();
+  if (logoutBtn) logoutBtn.style.display = "inline-block";
+  setStatus("Login erfolgreich.");
+
+  await runPendingAction();
 }
 
 async function logout() {
@@ -164,9 +215,9 @@ async function logout() {
     return;
   }
 
-  if (loginBox) loginBox.style.display = "block";
-  if (libraryBox) libraryBox.style.display = "none";
-  setStatus("Abgemeldet.");
+  if (loginBox) loginBox.style.display = "none";
+  if (logoutBtn) logoutBtn.style.display = "none";
+  setStatus("Abgemeldet. Vorschau bleibt frei sichtbar.");
 }
 
 function showPreview(url) {
@@ -210,7 +261,7 @@ async function hasPurchasedBook(bookId) {
   return !!data;
 }
 
-async function readBook(bookId, fullPdfPath) {
+async function readBook(bookId, fullPdfPath, skipLoginCheck = false) {
   if (!bookId) {
     alert("Keine Buch-ID hinterlegt.");
     return;
@@ -219,6 +270,16 @@ async function readBook(bookId, fullPdfPath) {
   if (!fullPdfPath) {
     alert("Keine Vollversion hinterlegt.");
     return;
+  }
+
+  if (!skipLoginCheck) {
+    const loggedIn = await ensureLoggedIn({
+      type: "read",
+      bookId,
+      fullPdfPath
+    });
+
+    if (!loggedIn) return;
   }
 
   const cleanBookId = String(bookId).trim();
@@ -251,7 +312,7 @@ async function readBook(bookId, fullPdfPath) {
   window.open(data.signedUrl, "_blank");
 }
 
-function buyBook(bookId, price) {
+async function buyBook(bookId, price, skipLoginCheck = false) {
   if (!bookId) {
     alert("Keine Buch-ID hinterlegt.");
     return;
@@ -262,6 +323,17 @@ function buyBook(bookId, price) {
     return;
   }
 
+  if (!skipLoginCheck) {
+    const loggedIn = await ensureLoggedIn({
+      type: "buy",
+      bookId,
+      price
+    });
+
+    if (!loggedIn) return;
+  }
+
+  setStatus("Weiterleitung zum Kauf...");
   window.open(`https://paypal.me/Mayer68/${price}`, "_blank");
 }
 
@@ -355,12 +427,13 @@ async function checkSession() {
   if (data.session) {
     if (loginBox) loginBox.style.display = "none";
     if (libraryBox) libraryBox.style.display = "block";
-    setStatus("Bereits eingeloggt.");
-    await loadBooks();
+    if (logoutBtn) logoutBtn.style.display = "inline-block";
+    setStatus("Angemeldet.");
+    await runPendingAction();
   } else {
-    if (loginBox) loginBox.style.display = "block";
-    if (libraryBox) libraryBox.style.display = "none";
-    setStatus("Nicht eingeloggt.");
+    if (libraryBox) libraryBox.style.display = "block";
+    if (logoutBtn) logoutBtn.style.display = "none";
+    setStatus("Bücher frei sichtbar. Anmeldung erst bei Kauf oder Lesen nötig.");
   }
 }
 
@@ -401,8 +474,8 @@ window.showPreview = showPreview;
 window.readBook = readBook;
 window.buyBook = buyBook;
 
-document.addEventListener("DOMContentLoaded", () => {
-  setStatus("DOM geladen, Buttons werden verbunden");
+document.addEventListener("DOMContentLoaded", async () => {
+  setStatus("DOM geladen, Bücher werden geladen");
   setAuthorRequestStatus("Hier kannst du später eine Autorenanfrage senden.");
 
   document.getElementById("registerBtn")?.addEventListener("click", signup);
@@ -410,5 +483,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("logoutBtn")?.addEventListener("click", logout);
   authorRequestForm?.addEventListener("submit", handleAuthorRequest);
 
-  checkSession();
+  await loadBooks();
+  await checkSession();
 });
