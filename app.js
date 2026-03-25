@@ -153,7 +153,7 @@ async function sendMagicLink(email) {
   const { error } = await client.auth.signInWithOtp({
     email: cleanEmail,
     options: {
-      emailRedirectTo: window.location.href
+      emailRedirectTo: "https://meinebuecher.github.io/reader/"
     }
   });
 
