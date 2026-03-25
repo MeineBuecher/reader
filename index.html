@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Christian „Atila“ Mayer – Autorenplattform</title>
+  <title>Meine Buchmesse</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body {
@@ -19,15 +19,48 @@
 
     .page {
       max-width: 1100px;
-      margin: 40px auto;
+      margin: 28px auto 40px auto;
       padding: 0 20px;
     }
 
+    .hero {
+      margin-bottom: 24px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(10, 18, 35, 0.5);
+    }
+
+    .hero img {
+      display: block;
+      width: 100%;
+      max-height: 620px;
+      object-fit: cover;
+    }
+
+    .hero-caption {
+      padding: 18px 22px 22px 22px;
+      background: rgba(8, 14, 28, 0.9);
+      color: #e5e7eb;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
     h1 {
-      margin-bottom: 25px;
+      margin-bottom: 12px;
       font-size: 42px;
       color: #f8fafc;
       text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
+    }
+
+    .subtitle {
+      margin-top: 0;
+      margin-bottom: 28px;
+      color: #cbd5e1;
+      font-size: 17px;
+      line-height: 1.6;
+      max-width: 820px;
     }
 
     .box {
@@ -47,16 +80,14 @@
       font-size: 28px;
     }
 
-    .subtitle {
-      margin-top: -12px;
-      margin-bottom: 28px;
+    .section-text {
       color: #cbd5e1;
-      font-size: 16px;
-      line-height: 1.5;
-      max-width: 760px;
+      line-height: 1.6;
+      margin-bottom: 18px;
     }
 
-    input {
+    input,
+    textarea {
       width: 100%;
       padding: 12px;
       margin-bottom: 12px;
@@ -68,7 +99,13 @@
       color: #f8fafc;
     }
 
-    input::placeholder {
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
       color: #cbd5e1;
     }
 
@@ -91,7 +128,16 @@
       transform: translateY(-1px);
     }
 
-    #status {
+    .secondary-button {
+      background: linear-gradient(135deg, #5b4c3a, #8c6a44);
+    }
+
+    .secondary-button:hover {
+      background: linear-gradient(135deg, #6b5842, #9d7750);
+    }
+
+    #status,
+    #authorRequestStatus {
       margin-top: 12px;
       padding: 12px;
       background: rgba(255, 255, 255, 0.08);
@@ -99,6 +145,13 @@
       min-height: 20px;
       color: #dbeafe;
       border: 1px solid rgba(160, 190, 255, 0.12);
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.5;
     }
 
     #books {
@@ -170,9 +223,54 @@
       margin-top: 8px;
     }
 
+    .footer {
+      margin-top: 32px;
+      padding: 24px;
+      border-radius: 20px;
+      background: rgba(10, 18, 35, 0.72);
+      border: 1px solid rgba(160, 190, 255, 0.16);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .footer-links,
+    .access-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+      margin-bottom: 14px;
+    }
+
+    .footer a,
+    .access-links a {
+      color: #dbeafe;
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    .footer a:hover,
+    .access-links a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-note {
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+
+    .access-title {
+      margin-top: 18px;
+      margin-bottom: 10px;
+      color: #e5e7eb;
+      font-size: 15px;
+      font-weight: bold;
+      letter-spacing: 0.3px;
+    }
+
     @media (max-width: 700px) {
       .page {
-        margin: 24px auto;
+        margin: 18px auto 28px auto;
         padding: 0 14px;
       }
 
@@ -184,7 +282,9 @@
         font-size: 24px;
       }
 
-      .subtitle {
+      .subtitle,
+      .hero-caption,
+      .section-text {
         font-size: 15px;
       }
 
@@ -205,31 +305,99 @@
       .book-buttons {
         justify-content: center;
       }
+
+      .footer-links,
+      .access-links {
+        flex-direction: column;
+        gap: 10px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <h1>Christian „Atila“ Mayer</h1>
+
+    <div class="hero">
+      <img src="logo.jpg" alt="Meine Buchmesse" />
+      <div class="hero-caption">
+        Meine Buchmesse ist ein digitaler Ort für Bücher, Gedanken, Stimmen und neue Autorinnen und Autoren.
+        Leser sollen hier nicht nur Dateien finden, sondern Räume, in die sie eintreten können.
+      </div>
+    </div>
+
+    <h1>Meine Buchmesse</h1>
     <div class="subtitle">
-      Der erste Autorenraum dieser Plattform. Hier begegnen Leser den Werken nicht nur als Dateien,
-      sondern als Teil eines größeren Gedankens. Weitere Autoren können künftig ihren eigenen Raum erhalten.
+      Entdecke Bücher, Gedankenwelten und Autorenräume. Diese Plattform beginnt mit den Werken von
+      Christian „Atila“ Mayer und wächst Schritt für Schritt zu einer echten digitalen Buchmesse.
     </div>
 
     <div id="loginBox" class="box">
-      <h2>Anmelden oder registrieren</h2>
+      <h2>Leserzugang</h2>
+      <div class="section-text">
+        Melde dich an, um freigeschaltete Inhalte zu sehen. Die vereinfachte Anmeldung ohne Passwort
+        bereiten wir im nächsten Schritt im <strong>app.js</strong> vor.
+      </div>
+
       <input id="email" type="email" placeholder="E-Mail" />
       <input id="password" type="password" placeholder="Passwort" />
       <button id="registerBtn" type="button">Registrieren</button>
       <button id="loginBtn" type="button">Anmelden</button>
+
       <div id="status">Seite geladen...</div>
     </div>
 
+    <div class="box">
+      <h2>Als Autor auftreten</h2>
+      <div class="section-text">
+        Du möchtest mit einem eigenen Werk Teil der Buchmesse werden? Dann sende zuerst eine Anfrage.
+        Autorenzugänge werden nicht automatisch freigeschaltet, sondern vorab geprüft.
+      </div>
+
+      <form id="authorRequestForm">
+        <input id="authorName" type="text" placeholder="Dein Name" />
+        <input id="authorEmail" type="email" placeholder="Deine E-Mail" />
+        <input id="authorPenName" type="text" placeholder="Autorenname oder Künstlername" />
+        <input id="authorProject" type="text" placeholder="Was möchtest du veröffentlichen?" />
+        <textarea id="authorReason" placeholder="Warum möchtest du auf Meine Buchmesse als Autor auftreten?"></textarea>
+        <textarea id="authorMessage" placeholder="Zusätzliche Nachricht"></textarea>
+        <button id="authorRequestBtn" type="submit" class="secondary-button">Autorenanfrage senden</button>
+      </form>
+
+      <div id="authorRequestStatus">
+        Hier kannst du später eine Autorenanfrage senden.
+      </div>
+
+      <div class="hint">
+        Nach deiner Prüfung kannst du dem Autor später selbst einen Link oder Zugang schicken.
+      </div>
+    </div>
+
     <div id="libraryBox" class="box" style="display:none;">
-      <h2>Werke von Christian „Atila“ Mayer</h2>
+      <h2>Werke auf Meine Buchmesse</h2>
       <button id="logoutBtn" type="button">Abmelden</button>
       <div id="books"></div>
     </div>
+
+    <div class="footer">
+      <div class="footer-links">
+        <a href="#impressum">Impressum</a>
+        <a href="#datenschutz">Datenschutz</a>
+        <a href="#agb">AGB</a>
+        <a href="#widerruf">Widerruf</a>
+        <a href="#kontakt">Kontakt</a>
+      </div>
+
+      <div class="access-title">Interne Zugänge</div>
+      <div class="access-links">
+        <a href="#loginBox">Autorenzugang</a>
+        <a href="#loginBox">Adminzugang</a>
+      </div>
+
+      <div class="footer-note">
+        Die Rechtstexte und die getrennten Bereiche für Autor und Admin werden im nächsten Schritt technisch weiter ausgebaut.
+      </div>
+    </div>
+
   </div>
 
   <script src="app.js?v=2"></script>
