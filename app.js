@@ -8,9 +8,16 @@ const statusBox = document.getElementById("status");
 const loginBox = document.getElementById("loginBox");
 const libraryBox = document.getElementById("libraryBox");
 const booksContainer = document.getElementById("books");
+const authorRequestForm = document.getElementById("authorRequestForm");
+const authorRequestStatusBox = document.getElementById("authorRequestStatus");
 
 function setStatus(text) {
   if (statusBox) statusBox.textContent = text;
+  console.log(text);
+}
+
+function setAuthorRequestStatus(text) {
+  if (authorRequestStatusBox) authorRequestStatusBox.textContent = text;
   console.log(text);
 }
 
@@ -72,40 +79,69 @@ function getBookDescription(book) {
       "Ein neuer Blick auf Verantwortung, Bewusstsein und die Frage, wie Denken, Wahrnehmung und Handeln zusammenwirken."
   };
 
-  return descriptions[title] || "Eine besondere Veröffentlichung aus deiner Bücherei.";
+  return descriptions[title] || "Eine besondere Veröffentlichung auf Meine Buchmesse.";
+}
+
+function getEmail() {
+  return document.getElementById("email")?.value.trim() || "";
+}
+
+function getPassword() {
+  return document.getElementById("password")?.value || "";
+}
+
+async function sendMagicLink(email) {
+  const cleanEmail = String(email || "").trim();
+
+  if (!cleanEmail) {
+    setStatus("Bitte E-Mail eingeben.");
+    return false;
+  }
+
+  setStatus("Anmeldelink wird gesendet...");
+
+  const { error } = await client.auth.signInWithOtp({
+    email: cleanEmail,
+    options: {
+      emailRedirectTo: window.location.href
+    }
+  });
+
+  if (error) {
+    setStatus("Link konnte nicht gesendet werden: " + error.message);
+    return false;
+  }
+
+  setStatus("Anmeldelink wurde an deine E-Mail gesendet.");
+  return true;
 }
 
 async function signup() {
-  setStatus("Registrieren geklickt");
+  const email = getEmail();
 
-  const email = document.getElementById("email")?.value.trim();
-  const password = document.getElementById("password")?.value;
-
-  if (!email || !password) {
-    setStatus("Bitte E-Mail und Passwort eingeben.");
+  if (!email) {
+    setStatus("Bitte E-Mail eingeben.");
     return;
   }
 
-  const { error } = await client.auth.signUp({ email, password });
-
-  if (error) {
-    setStatus("Registrierung fehlgeschlagen: " + error.message);
-    return;
-  }
-
-  setStatus("Registrierung erfolgreich.");
+  await sendMagicLink(email);
 }
 
 async function login() {
-  setStatus("Anmelden geklickt");
+  const email = getEmail();
+  const password = getPassword();
 
-  const email = document.getElementById("email")?.value.trim();
-  const password = document.getElementById("password")?.value;
-
-  if (!email || !password) {
-    setStatus("Bitte E-Mail und Passwort eingeben.");
+  if (!email) {
+    setStatus("Bitte E-Mail eingeben.");
     return;
   }
+
+  if (!password) {
+    await sendMagicLink(email);
+    return;
+  }
+
+  setStatus("Anmeldung wird geprüft...");
 
   const { error } = await client.auth.signInWithPassword({ email, password });
 
@@ -328,16 +364,51 @@ async function checkSession() {
   }
 }
 
+async function handleAuthorRequest(event) {
+  event.preventDefault();
+
+  const name = document.getElementById("authorName")?.value.trim() || "";
+  const email = document.getElementById("authorEmail")?.value.trim() || "";
+  const penName = document.getElementById("authorPenName")?.value.trim() || "";
+  const project = document.getElementById("authorProject")?.value.trim() || "";
+  const reason = document.getElementById("authorReason")?.value.trim() || "";
+  const message = document.getElementById("authorMessage")?.value.trim() || "";
+
+  if (!name || !email || !project || !reason) {
+    setAuthorRequestStatus("Bitte mindestens Name, E-Mail, Projekt und Begründung ausfüllen.");
+    return;
+  }
+
+  const subject = encodeURIComponent("Autorenanfrage – Meine Buchmesse");
+  const body = encodeURIComponent(
+`Name: ${name}
+E-Mail: ${email}
+Autorenname/Künstlername: ${penName}
+Projekt: ${project}
+
+Warum ich als Autor auftreten möchte:
+${reason}
+
+Zusätzliche Nachricht:
+${message}`
+  );
+
+  setAuthorRequestStatus("Dein Mailprogramm wird geöffnet. Dort kannst du die Anfrage direkt absenden.");
+  window.location.href = `mailto:DEINE-EMAIL@DOMAIN.DE?subject=${subject}&body=${body}`;
+}
+
 window.showPreview = showPreview;
 window.readBook = readBook;
 window.buyBook = buyBook;
 
 document.addEventListener("DOMContentLoaded", () => {
   setStatus("DOM geladen, Buttons werden verbunden");
+  setAuthorRequestStatus("Hier kannst du später eine Autorenanfrage senden.");
 
   document.getElementById("registerBtn")?.addEventListener("click", signup);
   document.getElementById("loginBtn")?.addEventListener("click", login);
   document.getElementById("logoutBtn")?.addEventListener("click", logout);
+  authorRequestForm?.addEventListener("submit", handleAuthorRequest);
 
   checkSession();
 });
