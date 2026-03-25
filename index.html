@@ -154,6 +154,14 @@
       line-height: 1.5;
     }
 
+    .login-note {
+      margin-top: -4px;
+      margin-bottom: 14px;
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
     #books {
       display: flex;
       flex-direction: column;
@@ -334,13 +342,18 @@
     <div id="loginBox" class="box">
       <h2>Leserzugang</h2>
       <div class="section-text">
-        Melde dich an, um freigeschaltete Inhalte zu sehen. Die vereinfachte Anmeldung ohne Passwort
-        bereiten wir im nächsten Schritt im <strong>app.js</strong> vor.
+        Gib einfach deine E-Mail ein. Du kannst dir einen Anmeldelink senden lassen oder dich wie bisher
+        mit Passwort anmelden.
       </div>
 
       <input id="email" type="email" placeholder="E-Mail" />
-      <input id="password" type="password" placeholder="Passwort" />
-      <button id="registerBtn" type="button">Registrieren</button>
+      <input id="password" type="password" placeholder="Passwort (optional)" />
+
+      <div class="login-note">
+        Ohne Passwort bekommst du einen Link per E-Mail. Mit Passwort meldest du dich direkt an.
+      </div>
+
+      <button id="registerBtn" type="button">Link anfordern</button>
       <button id="loginBtn" type="button">Anmelden</button>
 
       <div id="status">Seite geladen...</div>
