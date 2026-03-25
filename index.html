@@ -275,51 +275,6 @@
       font-weight: bold;
       letter-spacing: 0.3px;
     }
-
-    @media (max-width: 700px) {
-      .page {
-        margin: 18px auto 28px auto;
-        padding: 0 14px;
-      }
-
-      h1 {
-        font-size: 32px;
-      }
-
-      h2 {
-        font-size: 24px;
-      }
-
-      .subtitle,
-      .hero-caption,
-      .section-text {
-        font-size: 15px;
-      }
-
-      .book-card {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-      }
-
-      .book-cover {
-        width: 150px;
-      }
-
-      .book-info {
-        align-items: center;
-      }
-
-      .book-buttons {
-        justify-content: center;
-      }
-
-      .footer-links,
-      .access-links {
-        flex-direction: column;
-        gap: 10px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -335,15 +290,14 @@
 
     <h1>Meine Buchmesse</h1>
     <div class="subtitle">
-      Entdecke Bücher, Gedankenwelten und Autorenräume. Diese Plattform beginnt mit den Werken von
-      Christian „Atila“ Mayer und wächst Schritt für Schritt zu einer echten digitalen Buchmesse.
+      Entdecke Bücher, Gedankenwelten und Autorenräume. Die Vorschau ist frei zugänglich.
+      Erst für das Lesen der Vollversion oder den Kauf ist eine Anmeldung erforderlich.
     </div>
 
-    <div id="loginBox" class="box">
-      <h2>Leserzugang</h2>
+    <div id="loginBox" class="box" style="display:none;">
+      <h2>Anmeldung für Kauf oder Lesen</h2>
       <div class="section-text">
-        Gib einfach deine E-Mail ein. Du kannst dir einen Anmeldelink senden lassen oder dich wie bisher
-        mit Passwort anmelden.
+        Nur wenn du ein Buch kaufen oder die Vollversion lesen möchtest, brauchst du eine Anmeldung.
       </div>
 
       <input id="email" type="email" placeholder="E-Mail" />
@@ -353,51 +307,25 @@
         Ohne Passwort bekommst du einen Link per E-Mail. Mit Passwort meldest du dich direkt an.
       </div>
 
-      <button id="registerBtn" type="button">Link anfordern</button>
-      <button id="loginBtn" type="button">Anmelden</button>
+      <button id="registerBtn">Link anfordern</button>
+      <button id="loginBtn">Anmelden</button>
 
       <div id="status">Seite geladen...</div>
     </div>
 
-    <div class="box">
-      <h2>Als Autor auftreten</h2>
-      <div class="section-text">
-        Du möchtest mit einem eigenen Werk Teil der Buchmesse werden? Dann sende zuerst eine Anfrage.
-        Autorenzugänge werden nicht automatisch freigeschaltet, sondern vorab geprüft.
-      </div>
-
-      <form id="authorRequestForm">
-        <input id="authorName" type="text" placeholder="Dein Name" />
-        <input id="authorEmail" type="email" placeholder="Deine E-Mail" />
-        <input id="authorPenName" type="text" placeholder="Autorenname oder Künstlername" />
-        <input id="authorProject" type="text" placeholder="Was möchtest du veröffentlichen?" />
-        <textarea id="authorReason" placeholder="Warum möchtest du auf Meine Buchmesse als Autor auftreten?"></textarea>
-        <textarea id="authorMessage" placeholder="Zusätzliche Nachricht"></textarea>
-        <button id="authorRequestBtn" type="submit" class="secondary-button">Autorenanfrage senden</button>
-      </form>
-
-      <div id="authorRequestStatus">
-        Hier kannst du später eine Autorenanfrage senden.
-      </div>
-
-      <div class="hint">
-        Nach deiner Prüfung kannst du dem Autor später selbst einen Link oder Zugang schicken.
-      </div>
-    </div>
-
-    <div id="libraryBox" class="box" style="display:none;">
+    <div id="libraryBox" class="box">
       <h2>Werke auf Meine Buchmesse</h2>
-      <button id="logoutBtn" type="button">Abmelden</button>
+      <button id="logoutBtn" style="display:none;">Abmelden</button>
       <div id="books"></div>
     </div>
 
     <div class="footer">
       <div class="footer-links">
-        <a href="#impressum">Impressum</a>
-        <a href="#datenschutz">Datenschutz</a>
-        <a href="#agb">AGB</a>
-        <a href="#widerruf">Widerruf</a>
-        <a href="#kontakt">Kontakt</a>
+        <a href="#">Impressum</a>
+        <a href="#">Datenschutz</a>
+        <a href="#">AGB</a>
+        <a href="#">Widerruf</a>
+        <a href="#">Kontakt</a>
       </div>
 
       <div class="access-title">Interne Zugänge</div>
@@ -405,14 +333,10 @@
         <a href="#loginBox">Autorenzugang</a>
         <a href="#loginBox">Adminzugang</a>
       </div>
-
-      <div class="footer-note">
-        Die Rechtstexte und die getrennten Bereiche für Autor und Admin werden im nächsten Schritt technisch weiter ausgebaut.
-      </div>
     </div>
 
   </div>
 
-  <script src="app.js?v=2"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
